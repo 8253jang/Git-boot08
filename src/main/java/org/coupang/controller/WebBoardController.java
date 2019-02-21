@@ -182,6 +182,10 @@ public class WebBoardController {
     	 return "redirect:/boards/view";
      }
 
+     @GetMapping("/board/minsoo")
+	 public String hello() {
+     	return "hello minsoo";
+	 }
 }
 
 
