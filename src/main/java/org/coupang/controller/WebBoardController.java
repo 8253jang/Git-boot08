@@ -181,6 +181,12 @@ public class WebBoardController {
     	 
     	 return "redirect:/boards/view";
      }
+     
+     
+     @GetMapping("/hee")
+     public String test() {
+    	 return "잼 있다~~";
+     }
 
 }
 
