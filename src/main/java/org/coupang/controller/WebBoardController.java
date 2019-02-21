@@ -185,7 +185,7 @@ public class WebBoardController {
      
      @GetMapping("/hee")
      public String test() {
-    	 return "잼 있다~~";
+    	 return "잼 있다ㅇㄹㅇㄹㅇㄹ~~";
      }
 
      @GetMapping("/board/minsoo")
