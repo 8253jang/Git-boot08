@@ -1,0 +1,181 @@
+<html xmlns:th="http://www.thymeleaf.org" 
+ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{/layout/layout1}">
+<head>
+  <title>Thymeleaf Sample</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <style>
+   
+  </style>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+  <!--  <div class="panel-heading"> List Page</div>
+   <div class="panel-body">
+      <p>[[${result}]]</p>
+      <div>
+        <ul class="list-group">
+           <li class="list-group-item" th:each="board:${result.content}">
+             [[${board}]]
+           </li>
+        </ul>
+      </div>
+   </div>
+ </div>  -->
+ 
+ <!--  289page PageMaker 이용하기  -->
+  <div class="panel-heading"> List Page</div>
+  
+    <!-- 등록하기 버튼 -->
+      <div class="panel-body pull-right">
+         <h3><a class="label label-default" th:href="@{register}">Register</a></h3>
+      </div>
+  
+   <div class="panel-body">
+      <!-- <p>[[${result}]]</p>
+      <div th:with="result=${result.result}">  Page<T> 이다.
+        <ul class="list-group">
+           <li class="list-group-item" th:each="board:${result.content}">
+             [[${board}]]
+           </li>
+        </ul>
+      </div> -->
+      
+      
+      <!-- talbe로 화면 구성 -->
+      
+      <div th:with="result=${result.result}">
+        <table class="table table-striped table-bordered table-hover" id="dataTables-example">
+           <thead>
+              <tr>
+                 <th>BNO</th>
+                 <th>TITLE</th>
+                 <th>WRITER</th>
+                 <th>REGDATE</th>
+              </tr>
+           </thead>
+           <tbody>
+             
+              
+              <!--  389페이지 적용하기  -->
+              <tr class="odd gradeX" th:each="arr:${result.content}">
+                 <td>[[${arr[0]}]]</td>
+                 <td><a th:href="${arr[0]}" class="boardLink">[[${arr[1]}]]</a>
+                    <span class="badge">[[${arr[4]}]]</span>
+                 </td>
+                 <td>[[${arr[3]}]]</td>
+                 <td>[[${#dates.format(arr[4] ,'yyyy-MM-dd')}]]</td>
+              </tr> 
+           </tbody>
+        </table>
+        
+     <!--검색 추가 -->        
+        
+        <div>
+           <select id="searchType">
+              <option>--선택--</option>
+              <option value="t" th:selected="${pageVO.type=='t'}">Title</option>
+              <option value="c" th:selected="${pageVO.type=='c'}">Content</option>
+              <option value="w" th:selected="${pageVO.type=='w'}">Writer</option>
+           </select>
+           <input type="text" id="searchKeyword" th:value="${pageVO.keyword}">
+           <button id="searchBtn">Search</button>
+        </div>
+        
+      </div>
+      
+
+  <!-- paging처리하자 - 이전 ,다음 처리 -->
+  <nav>
+   <div>
+      <ul class="pagination">
+      <li class="page-item" th:if="${result.prevPage}">
+         <a th:href="${result.prevPage.pageNumber}+1">PREV[[${result.prevPage.pageNumber}+1]]</a>
+      </li>
+      
+        <li  class="page-item" th:each="p:${result.pageList}"  th:classappend="${p.pageNumber==result.currentPageNum-1}?active:''">
+            <a th:href="${p.pageNumber}+1" > [[${p.pageNumber}+1]]</a> &nbsp; &nbsp;
+        </li>
+        
+        <li class="page-item" th:if="${result.nextPage}">
+         <a th:href="${result.nextPage.pageNumber}+1">NEXT [[${result.nextPage.pageNumber}+1]]</a>
+      </li>
+        
+      </ul>
+   </div>
+ </nav>
+ 
+ <!-- end Page display  -->
+ <form id="f1" th:action="@{list}" method="get">
+    <input type="text" name="page" th:value="${result.currentPageNum}">
+    <input type="text" name="size" th:value="${result.currentPage.pageSize}">
+    
+    <input type="text" name="type" th:value="${pageVO.type}">
+    <input type="text" name="keyword" th:value="${pageVO.keyword}">
+ </form>
+ 
+   </div>
+ </div>
+ 
+
+ <!--  Paging End      -->
+ <th:block layout:fragment="script">
+  <script th:inline="javascript">
+      $(document).ready(function(){
+    	  //등록되었을때 알림
+    	  var msg=[[${msg}]];
+    	  if(msg=="suuccess"){
+    		  alert([[${message}]])
+    	  }
+    	  
+    	  
+    	 // alert(1)
+    	 var forObj = $("#f1");
+    	 $(".pagination a").click(function(e){
+    		 e.preventDefault();//????
+    		 
+    		 forObj.find("[name='page']").val($(this).attr('href'))
+    		 forObj.submit();
+    	 })
+    	 
+    	 
+    	 //검색 클릭했을때
+    	 $("#searchBtn").click(function(){
+    		 var typeStr = $("#searchType").find(":selected").val();
+    		 var keywordStr = $("#searchKeyword").val();
+    		 
+    		 console.log(typeStr , " " , keywordStr);
+    		 
+    		 forObj.find("[name=type]").val(typeStr);
+    		 forObj.find("[name=keyword]").val(keywordStr);
+    		 forObj.find("[name=page]").val(1);
+    		 forObj.submit();
+    	 })
+    	 
+    	 
+    	 //제목 클릭해서 상세보기 가기
+    	 $(".boardLink").click(function(e){
+    		 alert(1)
+    		  e.preventDefault();//이벤트호출을 막는다.
+    		  
+    		  var boardNo = $(this).attr("href");
+    		  forObj.append("<input type='text' name='bno' value='"+boardNo+"'>");
+    		  
+    		  forObj.attr("action",[[@{'/boards/view'}]]);
+    		  
+    		  forObj.submit();
+    		  
+    	 });
+    	 
+    	 
+      })//ready끝
+  </script>
+ </th:block>
+ 
+</body>
+</html>
+
+
+
+
