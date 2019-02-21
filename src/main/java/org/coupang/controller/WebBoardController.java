@@ -188,6 +188,10 @@ public class WebBoardController {
     	 return "잼 있다~~";
      }
 
+     @GetMapping("/board/minsoo")
+	 public String hello() {
+     	return "hello minsoo";
+	 }
 }
 
 
